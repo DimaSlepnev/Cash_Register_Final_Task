@@ -56,6 +56,18 @@ public class Bill {
         this.confirmation = confirmation;
     }
 
+    @Override
+    public String toString() {
+        return "Bill{" +
+                "id=" + id +
+                ", productId=" + productId +
+                ", body='" + body + '\'' +
+                ", amount=" + amount +
+                ", price=" + price +
+                ", confirmation=" + confirmation +
+                '}';
+    }
+
     public static class Builder {
         private Bill newBill;
 

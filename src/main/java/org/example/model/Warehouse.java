@@ -38,6 +38,16 @@ public class Warehouse {
         this.expertId = expertId;
     }
 
+    @Override
+    public String toString() {
+        return "Product{" +
+                "id=" + id +
+                ", product='" + product + '\'' +
+                ", amount=" + amount +
+                ", expertId=" + expertId +
+                '}';
+    }
+
     public static class Builder{
         private Warehouse newWarehouse;
         public Builder(){

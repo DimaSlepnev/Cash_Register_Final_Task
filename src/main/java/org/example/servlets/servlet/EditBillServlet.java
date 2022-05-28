@@ -24,12 +24,18 @@ public class EditBillServlet extends HttpServlet {
         int amount = Integer.parseInt(amountStr);
         int id = Integer.parseInt(idStr);
         int price = Integer.parseInt(priceStr);
+        int amountWas = Integer.parseInt(req.getParameter("amountWas"));
         Bill bill = BillService.service().findModelById(id);
         try {
             int productId = Integer.parseInt(bill.getBody());
             Warehouse warehouse = WarehouseService.service().findModelById(productId);
             if (warehouse != null && amount <= warehouse.getAmount()) {
                 BillService.service().updateAmountAndPriceById(amount,price, bill.getId());
+                if(amount > amountWas){
+                    WarehouseService.service().updateAmount(-(amount - amountWas),bill.getBody());
+                }else {
+                    WarehouseService.service().updateAmount(amountWas - amount,bill.getBody());
+                }
                 req.setAttribute("editBill",1);
                 req.setAttribute("bills", BillService.service().findAll());
                 getServletContext().getRequestDispatcher(allBillsPath).forward(req, resp);
@@ -42,6 +48,11 @@ public class EditBillServlet extends HttpServlet {
             Warehouse warehouse = WarehouseService.service().findByName(bill.getBody());
             if (warehouse != null && amount <= warehouse.getAmount()) {
                 BillService.service().updateAmountAndPriceById(amount,price, bill.getId());
+                if(amount > amountWas){
+                    WarehouseService.service().updateAmount(-(amount - amountWas),bill.getBody());
+                }else {
+                    WarehouseService.service().updateAmount(amountWas - amount,bill.getBody());
+                }
                 req.setAttribute("editBill",1);
                 req.setAttribute("bills", BillService.service().findAll());
                 getServletContext().getRequestDispatcher(allBillsPath).forward(req, resp);

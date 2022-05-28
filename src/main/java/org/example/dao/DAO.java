@@ -1,11 +1,15 @@
 package org.example.dao;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.List;
 
 public interface DAO <Model,Key>{
+   public static final Logger logger = LoggerFactory.getLogger(DAO.class);
     boolean create(Model model);
     List<Model> findAll();
     Model findModelById(Key id);
@@ -18,7 +22,7 @@ public interface DAO <Model,Key>{
                 statement.close();
             }
         } catch (SQLException e) {
-            // log
+            logger.error("Cant close prepared statement",e);
         }
     }
     default void close(Connection connection) {
@@ -27,7 +31,7 @@ public interface DAO <Model,Key>{
                 connection.close();
             }
         } catch (SQLException e) {
-            //log
+            logger.error("Can't close connection", e);
         }
     }
 }

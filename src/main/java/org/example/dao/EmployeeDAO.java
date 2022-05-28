@@ -2,18 +2,14 @@ package org.example.dao;
 
 import org.example.connection.ConnectionPool;
 import org.example.connection.CreateConnection;
-import org.example.loggerConfig.MyLogger;
 import org.example.model.Employee;
-
+import org.slf4j.*;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
-import org.apache.log4j.Logger;
-
-import javax.print.attribute.standard.PresentationDirection;
 
 public class EmployeeDAO implements DAO<Employee, Integer> {
-   // private static final Logger logger = MyLogger.getLogger(EmployeeDAO.class.getSimpleName());
+    private static final Logger logger = LoggerFactory.getLogger(EmployeeDAO.class);
     private static ConnectionPool cp;
     private Statement st = null;
     Connection connection = null;
@@ -23,9 +19,6 @@ public class EmployeeDAO implements DAO<Employee, Integer> {
     @Override
     public boolean create(Employee employee) {
         boolean result = false;
-        /*Connection connection = cp.getConnection();*/
-        /*Connection connection = null;
-        PreparedStatement pst = null;*/
         try {
             connection = CreateConnection.createConnection();
             pst = connection.prepareStatement(SQLEmployee.CREATE_EMPLOYEE.QUERY);
@@ -34,13 +27,13 @@ public class EmployeeDAO implements DAO<Employee, Integer> {
             pst.setString(3, employee.getPass());
             pst.setString(4, employee.getFirstName());
             pst.setString(5, employee.getSecondName());
+            logger.debug("Add new employee {}",employee);
             result = pst.execute();
         } catch (SQLException e) {
-           // logger.error(MyLogger.exceptionMessage(e));
+            logger.error("Employee {} wasn't added",employee);
         } finally {
             close(connection);
             close(pst);
-            /*cp.releaseConnection(connection);*/
         }
         return result;
     }
@@ -48,9 +41,6 @@ public class EmployeeDAO implements DAO<Employee, Integer> {
     @Override
     public List<Employee> findAll() {
         List<Employee> employees = new ArrayList<>();
-        /*Connection connection = cp.getConnection();*/
-       /* Connection connection = null;
-        PreparedStatement pst = null;*/
         try {
             connection = CreateConnection.createConnection();
             pst = connection.prepareStatement(SQLEmployee.FIND_ALL.QUERY);
@@ -65,11 +55,10 @@ public class EmployeeDAO implements DAO<Employee, Integer> {
                 employees.add(employee);
             }
         } catch (SQLException e) {
-           // logger.error(MyLogger.exceptionMessage(e));
+            logger.error("Can't find all, List size is {}", employees.size());
         } finally {
             close(connection);
             close(pst);
-          /* cp.releaseConnection(connection);*/
         }
         return employees;
     }
@@ -77,9 +66,6 @@ public class EmployeeDAO implements DAO<Employee, Integer> {
     @Override
     public Employee findModelById(Integer id) {
         Employee employee = null;
-        /*Connection connection = null;
-        PreparedStatement pst = null;*/
-        /*Connection connection = cp.getConnection();*/
         try {
             connection = CreateConnection.createConnection();
             pst = connection.prepareStatement(SQLEmployee.FIND_EMPLOYEE_BY_ID.QUERY);
@@ -93,11 +79,10 @@ public class EmployeeDAO implements DAO<Employee, Integer> {
                         .withPass(rs.getString(4)).withFirstName(rs.getString(5))
                         .withLastName(rs.getString(6)).built();
         } catch (SQLException e) {
-          //  logger.error(MyLogger.exceptionMessage(e));
+          logger.error("Can't find employee by {} id. ", id, e);
         } finally {
            close(connection);
             close(pst);
-           /*cp.releaseConnection(connection);*/
         }
         return employee;
     }
@@ -105,9 +90,6 @@ public class EmployeeDAO implements DAO<Employee, Integer> {
     @Override
     public boolean update(Employee employee) {
         boolean result = false;
-        /*Connection connection = null;
-        PreparedStatement pst = null;*/
-       /* Connection connection = cp.getConnection();*/
         try {
             connection = CreateConnection.createConnection();
             pst = connection.prepareStatement(SQLEmployee.UPDATE.QUERY);
@@ -118,12 +100,12 @@ public class EmployeeDAO implements DAO<Employee, Integer> {
             pst.setString(5, employee.getFirstName());
             pst.setString(6, employee.getSecondName());
             result = pst.execute();
+            logger.debug("{} was updated", employee);
         } catch (SQLException e) {
-           // logger.error(MyLogger.exceptionMessage(e));
+         logger.error("Cant update {}",employee);
         } finally {
             close(connection);
             close(pst);
-           /* cp.releaseConnection(connection);*/
         }
         return result;
     }
@@ -131,21 +113,17 @@ public class EmployeeDAO implements DAO<Employee, Integer> {
     @Override
     public boolean deleteById(Integer id) {
         boolean result = false;
-        /*Connection connection = null;
-        PreparedStatement pst = null;*/
-        /*Connection connection = cp.getConnection();*/
         try {
             connection = CreateConnection.createConnection();
             pst = connection.prepareStatement(SQLEmployee.DELETE_EMPLOYEE_BY_ID.QUERY);
             pst.setInt(1, id);
             result = pst.execute();
-
+            logger.debug("Employee with id {} was removed",id);
         } catch (SQLException e) {
-           // logger.error(MyLogger.exceptionMessage(e));
+            logger.error("Can't delete employee with {} id", id);
         } finally {
             close(connection);
             close(pst);
-            /*cp.releaseConnection(connection);*/
         }
         return result;
     }
@@ -153,9 +131,6 @@ public class EmployeeDAO implements DAO<Employee, Integer> {
     @Override
     public boolean delete(Employee employee) {
         boolean result = false;
-        /*Connection connection = null;
-        PreparedStatement pst = null;*/
-        /*Connection connection = cp.getConnection();*/
         try {
             connection = CreateConnection.createConnection();
             pst = connection.prepareStatement(SQLEmployee.DELETE_EMPLOYEE.QUERY);
@@ -166,21 +141,18 @@ public class EmployeeDAO implements DAO<Employee, Integer> {
             pst.setString(5, employee.getFirstName());
             pst.setString(6, employee.getSecondName());
             result = pst.execute();
+            logger.debug("{} with id {} was removed", employee, employee.getId());
         } catch (SQLException e) {
-           // logger.error(MyLogger.exceptionMessage(e));
+           logger.error("Can't delete {} with id {}", employee, employee.getId());
         } finally {
             close(connection);
             close(pst);
-           /* cp.releaseConnection(connection);*/
         }
         return result;
     }
 
     public Employee findByLoginAndPass(String login, String pass) {
         Employee employee = null;
-     /*   Connection connection = null;
-        PreparedStatement pst = null;*/
-        /*Connection connection = cp.getConnection();*/
         try {
             connection = CreateConnection.createConnection();
             pst = connection.prepareStatement(SQLEmployee.FIND_EMPLOYEE_BY_LOGIN_AND_PASS.QUERY);
@@ -197,38 +169,15 @@ public class EmployeeDAO implements DAO<Employee, Integer> {
                         .withLastName(rs.getString(6)).built();
             }
         } catch (SQLException e) {
-          //  logger.error(MyLogger.exceptionMessage(e));
+          logger.error("Can't find employee with login {}", login);
         } finally {
             close(connection);
             close(pst);
-            /*cp.releaseConnection(connection);*/
         }
         return employee;
     }
 
-    public boolean isExist(String login, String pass) {
-        boolean result = false;
-       /* Connection connection = null;
-        PreparedStatement pst = null;*/
-      /*  Connection connection = cp.getConnection();*/
-        try {
-            connection = CreateConnection.createConnection();
-            pst = connection.prepareStatement(SQLEmployee.IS_EXIST.QUERY);
-            pst.setString(1, login);
-            pst.setString(2, pass);
-            result = pst.execute();
-        } catch (SQLException e) {
-           // logger.error(MyLogger.exceptionMessage(e));
-        } finally {
-            close(connection);
-            close(pst);
-            /*cp.releaseConnection(connection);*/
-        }
-        return result;
-    }
-
     public boolean loginIsExist(String login){
-      //  boolean result = false;
         try{
             connection = CreateConnection.createConnection();
             pst = connection.prepareStatement(SQLEmployee.LOGIN_IS_EXIST.QUERY);
@@ -238,7 +187,7 @@ public class EmployeeDAO implements DAO<Employee, Integer> {
                 return true;
             }
         } catch (SQLException e) {
-            // logger.error(MyLogger.exceptionMessage(e));
+            logger.error("Cant find login {}. ",login, e);
         }finally {
             close(connection);
             close(pst);

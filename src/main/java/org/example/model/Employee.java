@@ -56,6 +56,17 @@ public class Employee {
         this.secondName = secondName;
     }
 
+    @Override
+    public String toString() {
+        return "Employee{" +
+                "id=" + id +
+                ", position='" + position + '\'' +
+                ", login='" + login + '\'' +
+                ", firstName='" + firstName + '\'' +
+                ", secondName='" + secondName + '\'' +
+                '}';
+    }
+
     public static class Builder{
         private Employee newEmployee;
         public Builder(){

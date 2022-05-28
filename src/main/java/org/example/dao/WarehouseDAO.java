@@ -1,18 +1,17 @@
 package org.example.dao;
 
-import org.apache.log4j.Logger;
 import org.example.connection.ConnectionPool;
 import org.example.connection.CreateConnection;
-import org.example.loggerConfig.MyLogger;
 import org.example.model.Warehouse;
 import org.example.services.WarehouseService;
+import org.slf4j.*;
 
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
 public class WarehouseDAO implements DAO<Warehouse, Integer> {
-    //private static final Logger logger = MyLogger.getLogger(EmployeeDAO.class.getSimpleName());
+    private static final Logger logger = LoggerFactory.getLogger(WarehouseDAO.class);
     private static ConnectionPool cp;
     private Statement st = null;
     Connection connection = null;
@@ -21,9 +20,6 @@ public class WarehouseDAO implements DAO<Warehouse, Integer> {
     @Override
     public boolean create(Warehouse warehouse) {
         boolean result = false;
-        /*Connection connection = null;
-        PreparedStatement pst = null;*/
-        /*Connection connection = cp.getConnection();*/
         try {
             connection = CreateConnection.createConnection();
             pst = connection.prepareStatement(SQLWarehouse.CREATE_PRODUCT.QUERY);
@@ -31,12 +27,12 @@ public class WarehouseDAO implements DAO<Warehouse, Integer> {
             pst.setInt(2, warehouse.getAmount());
             pst.setInt(3, warehouse.getExpertId());
             result = pst.execute();
+            logger.debug("Add new product {} to warehouse", warehouse);
         } catch (SQLException e) {
-            //logger.error(MyLogger.exceptionMessage(e));
+            logger.error("Product {} wasn't added to warehouse",warehouse);
         } finally {
             close(connection);
             close(pst);
-            /*cp.releaseConnection(connection);*/
         }
         return result;
     }
@@ -44,9 +40,6 @@ public class WarehouseDAO implements DAO<Warehouse, Integer> {
     @Override
     public List<Warehouse> findAll() {
         List<Warehouse> warehouseList = new ArrayList<>();
-        /*Connection connection = null;
-        PreparedStatement pst = null;*/
-        /*Connection connection = cp.getConnection();*/
         try {
             connection = CreateConnection.createConnection();
             pst = connection.prepareStatement(SQLWarehouse.FIND_ALL.QUERY);
@@ -60,11 +53,10 @@ public class WarehouseDAO implements DAO<Warehouse, Integer> {
                 warehouseList.add(warehouse);
             }
         } catch (SQLException e) {
-            //logger.error(MyLogger.exceptionMessage(e));
+            logger.error("Can't find all, List size is {}", warehouseList.size());
         } finally {
             close(connection);
             close(pst);
-            /*cp.releaseConnection(connection);*/
         }
         return warehouseList;
     }
@@ -72,9 +64,6 @@ public class WarehouseDAO implements DAO<Warehouse, Integer> {
     @Override
     public Warehouse findModelById(Integer id) {
         Warehouse warehouse = null;
-       /* Connection connection = null;
-        PreparedStatement pst = null;*/
-        /* Connection connection = cp.getConnection();*/
         try {
             connection = CreateConnection.createConnection();
             pst = connection.prepareStatement(SQLWarehouse.FIND_PRODUCT_BY_ID.QUERY);
@@ -88,11 +77,10 @@ public class WarehouseDAO implements DAO<Warehouse, Integer> {
                         .withExpertId(rs.getInt(4)).build();
             }
         } catch (SQLException e) {
-            //logger.error(MyLogger.exceptionMessage(e));
+            logger.error("Can't find product by {} id. ", id, e);
         } finally {
             close(connection);
             close(pst);
-            /*cp.releaseConnection(connection);*/
         }
 
         return warehouse;
@@ -101,9 +89,6 @@ public class WarehouseDAO implements DAO<Warehouse, Integer> {
     @Override
     public boolean update(Warehouse warehouse) {
         boolean result = false;
-        /*Connection connection = null;
-        PreparedStatement pst = null;*/
-        /*Connection connection = cp.getConnection();*/
         try {
             connection = CreateConnection.createConnection();
             pst = connection.prepareStatement(SQLWarehouse.UPDATE.QUERY);
@@ -112,12 +97,12 @@ public class WarehouseDAO implements DAO<Warehouse, Integer> {
             pst.setInt(3, warehouse.getExpertId());
             pst.setInt(4, warehouse.getId());
             result = pst.execute();
+            logger.debug("{} was updated", warehouse);
         } catch (SQLException e) {
-            //logger.error(MyLogger.exceptionMessage(e));
+            logger.error("Cant update {}",warehouse);
         } finally {
             close(connection);
             close(pst);
-            /*cp.releaseConnection(connection);*/
         }
         return result;
     }
@@ -125,20 +110,17 @@ public class WarehouseDAO implements DAO<Warehouse, Integer> {
     @Override
     public boolean deleteById(Integer id) {
         boolean result = false;
-        /*Connection connection = null;
-        PreparedStatement pst = null;*/
-        /*Connection connection = cp.getConnection();*/
         try {
             connection = CreateConnection.createConnection();
             pst = connection.prepareStatement(SQLWarehouse.DELETE_PRODUCT_BY_ID.QUERY);
             pst.setInt(1, id);
             result = pst.execute();
+            logger.debug("Product with {} id was removed from warehouse" , id);
         } catch (SQLException e) {
-           // logger.error(MyLogger.exceptionMessage(e));
+            logger.error("Can't delete product with {} id", id);
         } finally {
             close(connection);
             close(pst);
-            /*cp.releaseConnection(connection);*/
         }
         return result;
     }
@@ -146,9 +128,6 @@ public class WarehouseDAO implements DAO<Warehouse, Integer> {
     @Override
     public boolean delete(Warehouse warehouse) {
         boolean result = false;
-        /*Connection connection = null;
-        PreparedStatement pst = null;*/
-        /* Connection connection = cp.getConnection();*/
         try {
             connection = CreateConnection.createConnection();
             pst = connection.prepareStatement(SQLWarehouse.DELETE_PRODUCT.QUERY);
@@ -157,12 +136,12 @@ public class WarehouseDAO implements DAO<Warehouse, Integer> {
             pst.setInt(3, warehouse.getAmount());
             pst.setInt(4, warehouse.getExpertId());
             result = pst.execute();
+            logger.debug("{} with id {} was removed from warehouse", warehouse, warehouse.getId());
         } catch (SQLException e) {
-           // logger.error(MyLogger.exceptionMessage(e));
+           logger.error("Can't delete {} with id {}", warehouse, warehouse.getId());
         } finally {
             close(connection);
             close(pst);
-            /* cp.releaseConnection(connection);*/
         }
         return result;
     }
@@ -180,10 +159,9 @@ public class WarehouseDAO implements DAO<Warehouse, Integer> {
                         withProduct(rs.getString(2)).
                         withAmount(rs.getInt(3)).
                         withExpertId(rs.getInt(4)).build();
-
             }
         } catch (SQLException e) {
-           // logger.error(MyLogger.exceptionMessage(e));
+          logger.error("Can't find product in warehouse with name {}", productName);
         } finally {
             close(connection);
             close(pst);
@@ -205,7 +183,7 @@ public class WarehouseDAO implements DAO<Warehouse, Integer> {
                         .withAmount(rs.getInt(3))
                         .withExpertId(rs.getInt(4)).build();            }
         } catch (SQLException e) {
-          //  logger.error(MyLogger.exceptionMessage(e));
+            logger.error("Can't find product in warehouse with name {}", productName);
         } finally {
             close(connection);
             close(pst);
@@ -215,15 +193,16 @@ public class WarehouseDAO implements DAO<Warehouse, Integer> {
 
     public boolean updateAmount(int amount,String productName) {
         boolean result = false;
+        Warehouse warehouse = WarehouseService.service().findByName(productName);
         try {
-            Warehouse warehouse = WarehouseService.service().findByName(productName);
             connection = CreateConnection.createConnection();
             pst = connection.prepareStatement(SQLWarehouse.UPDATE_AMOUNT.QUERY);
             pst.setInt(1, warehouse.getAmount() + amount);
             pst.setString(2, warehouse.getProduct());
             result = pst.execute();
+            logger.debug("Product {} was updated to amount {}", warehouse,warehouse.getAmount()+amount);
         } catch (SQLException e) {
-           // logger.error(MyLogger.exceptionMessage(e));
+           logger.error("Can't update amount of product {} in warehouse",warehouse);
         } finally {
             close(connection);
             close(pst);
