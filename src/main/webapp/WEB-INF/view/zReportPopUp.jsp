@@ -2,6 +2,13 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %><html>
 <%@ page isELIgnored="false" %>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jstl/fmt" %>
+
+<fmt:bundle basename="i18n">
+    <fmt:message key="out.was.earned.today" var="wasEarnedToday"/>
+    <fmt:message key="label.z.report" var="zReportLabel"/>
+</fmt:bundle>
+
 <head>
     <title></title>
 </head>
@@ -16,10 +23,10 @@
             <!-- Modal content-->
             <div class="modal-content">
                 <div class="modal-header">
-                    <h4 class="modal-title">Z-Report</h4>
+                    <h4 class="modal-title">${zReportLabel}</h4>
                 </div>
                 <div class="modal-body">
-                    <c:out value="${zReport} was earned today"/>
+                    <c:out value="${zReport} ${wasEarnedToday}"/>
                 </div>
             </div>
 

@@ -1,7 +1,19 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ page contentType="text/html;charset=UTF-8" language="java" pageEncoding="utf-8" %>
 <%@ page isELIgnored="false" %>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jstl/fmt" %>
+<%@ taglib tagdir="/WEB-INF/tags" prefix="my" %>
+
+<fmt:bundle basename="i18n">
+    <fmt:message key="label.id" var="id"/>
+    <fmt:message key="select.position" var="position"/>
+    <fmt:message key="label.firstName" var="firstName"/>
+    <fmt:message key="label.secondName" var="secondName"/>
+    <fmt:message key="label.action" var="action"/>
+</fmt:bundle>
+
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.3/font/bootstrap-icons.css">
+
 <html>
 <head>
     <title>All employees</title>
@@ -14,12 +26,12 @@
 <table class="table table-striped" id="employeeTable">
     <thead>
     <tr>
-        <th scope="col">ID</th>
-        <th scope="col">Position</th>
-        <th scope="col">Name</th>
-        <th scope="col">Surname</th>
+        <th scope="col">${id}</th>
+        <th scope="col">${position}</th>
+        <th scope="col">${firstName}</th>
+        <th scope="col">${secondName}</th>
         <%if (employee.getPosition().equals("senior cashier")) {%>
-        <th scope="col">Action</th>
+        <th scope="col">${action}</th>
         <%}%>
     </tr>
     </thead>
@@ -53,5 +65,6 @@
         $('#employeeTable').dataTable();
     });
 </script>
+<my:footer/>
 </body>
 </html>

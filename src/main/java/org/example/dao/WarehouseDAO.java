@@ -1,6 +1,5 @@
 package org.example.dao;
 
-import org.example.connection.ConnectionPool;
 import org.example.connection.CreateConnection;
 import org.example.model.Warehouse;
 import org.example.services.WarehouseService;
@@ -12,7 +11,6 @@ import java.util.List;
 
 public class WarehouseDAO implements DAO<Warehouse, Integer> {
     private static final Logger logger = LoggerFactory.getLogger(WarehouseDAO.class);
-    private static ConnectionPool cp;
     private Statement st = null;
     Connection connection = null;
     PreparedStatement pst = null;

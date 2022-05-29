@@ -13,6 +13,12 @@ import java.util.List;
 
 @WebServlet("/xReport")
 public class XReportServlet extends HttpServlet {
+
+    @Override
+    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        getServletContext().getRequestDispatcher("/WEB-INF/view/xReportPopUp.jsp").forward(req,resp);
+    }
+
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         int xReport = 0;
@@ -23,6 +29,6 @@ public class XReportServlet extends HttpServlet {
             }
         }
         req.setAttribute("xReport",xReport);
-        getServletContext().getRequestDispatcher("/WEB-INF/view/xReportPopUp.jsp").forward(req,resp);
+        doGet(req,resp);
     }
 }

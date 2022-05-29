@@ -2,11 +2,7 @@ package org.example.servlets.servlet;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
-import jakarta.servlet.http.HttpServlet;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
-import jakarta.servlet.http.HttpSession;
-import org.example.dao.EmployeeDAO;
+import jakarta.servlet.http.*;
 import org.example.model.Employee;
 import org.example.services.EmployeeService;
 
@@ -15,6 +11,12 @@ import java.io.IOException;
 
 @WebServlet("/login")
 public class LoginServlet extends HttpServlet {
+
+    @Override
+    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        getServletContext().getRequestDispatcher("/WEB-INF/view/menu.jsp").forward(req,resp);
+    }
+
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         String login = req.getParameter("login");
@@ -23,7 +25,7 @@ public class LoginServlet extends HttpServlet {
         Employee employee = EmployeeService.service().findByLoginAndPass(login, pass);
         if (employee != null) {
             req.getSession().setAttribute("employee", employee);
-            getServletContext().getRequestDispatcher("/WEB-INF/view/menu.jsp").forward(req,resp);
+            doGet(req,resp);
         } else {
             getServletContext().getRequestDispatcher("/WEB-INF/view/login.jsp").forward(req,resp);
         }

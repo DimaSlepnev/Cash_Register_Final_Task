@@ -3,7 +3,21 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ page contentType="text/html;charset=UTF-8" language="java" pageEncoding="utf-8" %>
 <%@ page isELIgnored="false" %>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jstl/fmt" %>
+<%@ taglib tagdir="/WEB-INF/tags" prefix="my" %>
+
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.3/font/bootstrap-icons.css">
+
+<fmt:bundle basename="i18n">
+    <fmt:message key="label.id" var="id"/>
+    <fmt:message key="label.product.id" var="productId"/>
+    <fmt:message key="label.body" var="body"/>
+    <fmt:message key="label.amount" var="amount"/>
+    <fmt:message key="label.price" var="price"/>
+    <fmt:message key="label.confirmation" var="confirmation"/>
+    <fmt:message key="label.action" var="action"/>
+</fmt:bundle>
+
 <html>
 <head>
     <title>All bills</title>
@@ -16,14 +30,14 @@
 <table class="table table-striped" id="billsTable">
     <thead>
     <tr>
-        <th scope="col">ID</th>
-        <th scope="col">Product ID</th>
-        <th scope="col">Body</th>
-        <th scope="col">Amount</th>
-        <th scope="col">Price</th>
-        <th scope="col">Confirmation</th>
+        <th scope="col">${id}</th>
+        <th scope="col">${productId}</th>
+        <th scope="col">${body}</th>
+        <th scope="col">${amount}</th>
+        <th scope="col">${price}</th>
+        <th scope="col">${confirmation}</th>
         <%if (employee.getPosition().equals("senior cashier")) {%>
-        <th scope="col">Action</th>
+        <th scope="col">${action}</th>
         <%}%>
     </tr>
     </thead>
@@ -70,5 +84,6 @@
         $('#billsTable').dataTable();
     });
 </script>
+<my:footer/>
 </body>
 </html>

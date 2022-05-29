@@ -1,6 +1,5 @@
 package org.example.dao;
 
-import org.example.connection.ConnectionPool;
 import org.example.connection.CreateConnection;
 import org.example.model.Employee;
 import org.slf4j.*;
@@ -10,7 +9,6 @@ import java.util.List;
 
 public class EmployeeDAO implements DAO<Employee, Integer> {
     private static final Logger logger = LoggerFactory.getLogger(EmployeeDAO.class);
-    private static ConnectionPool cp;
     private Statement st = null;
     Connection connection = null;
     PreparedStatement pst = null;
