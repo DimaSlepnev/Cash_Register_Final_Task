@@ -3,6 +3,7 @@ package org.example.dao;
 import org.example.connection.CreateConnection;
 import org.example.model.Employee;
 import org.slf4j.*;
+
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -16,7 +17,6 @@ public class EmployeeDAO implements DAO<Employee, Integer> {
 
     @Override
     public boolean create(Employee employee) {
-        boolean result = false;
         try {
             connection = CreateConnection.createConnection();
             pst = connection.prepareStatement(SQLEmployee.CREATE_EMPLOYEE.QUERY);
@@ -25,15 +25,18 @@ public class EmployeeDAO implements DAO<Employee, Integer> {
             pst.setString(3, employee.getPass());
             pst.setString(4, employee.getFirstName());
             pst.setString(5, employee.getSecondName());
-            logger.debug("Add new employee {}",employee);
-            result = pst.execute();
+            int i = pst.executeUpdate();
+            if (i > 0) {
+                logger.debug("Add new employee {}", employee);
+                return true;
+            }
         } catch (SQLException e) {
-            logger.error("Employee {} wasn't added",employee);
+            logger.error("Employee {} wasn't added", employee);
         } finally {
             close(connection);
             close(pst);
         }
-        return result;
+        return false;
     }
 
     @Override
@@ -77,9 +80,9 @@ public class EmployeeDAO implements DAO<Employee, Integer> {
                         .withPass(rs.getString(4)).withFirstName(rs.getString(5))
                         .withLastName(rs.getString(6)).built();
         } catch (SQLException e) {
-          logger.error("Can't find employee by {} id. ", id, e);
+            logger.error("Can't find employee by {} id. ", id, e);
         } finally {
-           close(connection);
+            close(connection);
             close(pst);
         }
         return employee;
@@ -94,13 +97,13 @@ public class EmployeeDAO implements DAO<Employee, Integer> {
             pst.setString(1, employee.getPosition());
             pst.setString(2, employee.getLogin());
             pst.setString(3, employee.getPass());
-            pst.setInt(4, employee.getId());
-            pst.setString(5, employee.getFirstName());
-            pst.setString(6, employee.getSecondName());
+            pst.setString(4, employee.getFirstName());
+            pst.setString(5, employee.getSecondName());
+            pst.setInt(6, employee.getId());
             result = pst.execute();
             logger.debug("{} was updated", employee);
         } catch (SQLException e) {
-         logger.error("Cant update {}",employee);
+            logger.error("Cant update {}", employee);
         } finally {
             close(connection);
             close(pst);
@@ -110,20 +113,22 @@ public class EmployeeDAO implements DAO<Employee, Integer> {
 
     @Override
     public boolean deleteById(Integer id) {
-        boolean result = false;
         try {
             connection = CreateConnection.createConnection();
             pst = connection.prepareStatement(SQLEmployee.DELETE_EMPLOYEE_BY_ID.QUERY);
             pst.setInt(1, id);
-            result = pst.execute();
-            logger.debug("Employee with id {} was removed",id);
+            int i = pst.executeUpdate();
+            if (i > 0) {
+                logger.debug("Employee with id {} was removed", id);
+                return true;
+            }
         } catch (SQLException e) {
             logger.error("Can't delete employee with {} id", id);
         } finally {
             close(connection);
             close(pst);
         }
-        return result;
+        return false;
     }
 
     @Override
@@ -141,7 +146,7 @@ public class EmployeeDAO implements DAO<Employee, Integer> {
             result = pst.execute();
             logger.debug("{} with id {} was removed", employee, employee.getId());
         } catch (SQLException e) {
-           logger.error("Can't delete {} with id {}", employee, employee.getId());
+            logger.error("Can't delete {} with id {}", employee, employee.getId());
         } finally {
             close(connection);
             close(pst);
@@ -167,7 +172,7 @@ public class EmployeeDAO implements DAO<Employee, Integer> {
                         .withLastName(rs.getString(6)).built();
             }
         } catch (SQLException e) {
-          logger.error("Can't find employee with login {}", login);
+            logger.error("Can't find employee with login {}", login);
         } finally {
             close(connection);
             close(pst);
@@ -175,18 +180,18 @@ public class EmployeeDAO implements DAO<Employee, Integer> {
         return employee;
     }
 
-    public boolean loginIsExist(String login){
-        try{
+    public boolean loginIsExist(String login) {
+        try {
             connection = CreateConnection.createConnection();
             pst = connection.prepareStatement(SQLEmployee.LOGIN_IS_EXIST.QUERY);
-            pst.setString(1,login);
+            pst.setString(1, login);
             ResultSet rs = pst.executeQuery();
-            while(rs.next()){
+            while (rs.next()) {
                 return true;
             }
         } catch (SQLException e) {
-            logger.error("Cant find login {}. ",login, e);
-        }finally {
+            logger.error("Cant find login {}. ", login, e);
+        } finally {
             close(connection);
             close(pst);
         }

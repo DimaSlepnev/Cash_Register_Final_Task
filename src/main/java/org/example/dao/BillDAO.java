@@ -17,7 +17,6 @@ public class BillDAO implements DAO<Bill, Integer> {
 
     @Override
     public boolean create(Bill bill) {
-        boolean result = false;
         try {
             connection = CreateConnection.createConnection();
             pst = connection.prepareStatement(SQLBill.CREATE_BILL.QUERY);
@@ -26,15 +25,18 @@ public class BillDAO implements DAO<Bill, Integer> {
             pst.setInt(3, bill.getAmount());
             pst.setInt(4, bill.getPrice());
             pst.setBoolean(5, bill.isConfirmation());
-            result = pst.execute();
-            logger.debug("Create new bill {}", bill);
+            int i = pst.executeUpdate();
+            if (i > 0) {
+                logger.debug("Create new bill {}", bill);
+                return true;
+            }
         } catch (SQLException e) {
             logger.error("Bill {} wasn't add", bill);
         } finally {
             close(connection);
             close(pst);
         }
-        return result;
+        return false;
     }
 
     @Override
@@ -92,7 +94,6 @@ public class BillDAO implements DAO<Bill, Integer> {
 
     @Override
     public boolean update(Bill bill) {
-        boolean result = false;
         try {
             connection = CreateConnection.createConnection();
             pst = connection.prepareStatement(SQLBill.UPDATE.QUERY);
@@ -102,33 +103,38 @@ public class BillDAO implements DAO<Bill, Integer> {
             pst.setInt(4, bill.getPrice());
             pst.setBoolean(5, bill.isConfirmation());
             pst.setInt(6, bill.getId());
-            result = pst.execute();
-            logger.debug("{} was updated", bill);
+            int i = pst.executeUpdate();
+            if (i > 0) {
+                logger.debug("{} was updated", bill);
+                return true;
+            }
         } catch (SQLException e) {
             logger.error("Cant update {}.", bill, e);
         } finally {
             close(connection);
             close(pst);
         }
-        return result;
+        return false;
     }
 
     @Override
     public boolean deleteById(Integer id) {
-        boolean result = false;
         try {
             connection = CreateConnection.createConnection();
             pst = connection.prepareStatement(SQLBill.DELETE_BILL_BY_ID.QUERY);
             pst.setInt(1, id);
-            result = pst.execute();
-            logger.debug("Bill with {} id was removed", id);
+            int i = pst.executeUpdate();
+            if (i > 0) {
+                logger.debug("Bill with {} id was removed", id);
+                return true;
+            }
         } catch (SQLException e) {
             logger.error("Can't delete bill with {} id", id);
         } finally {
             close(connection);
             close(pst);
         }
-        return result;
+        return false;
     }
 
     @Override
@@ -155,40 +161,44 @@ public class BillDAO implements DAO<Bill, Integer> {
     }
 
     public boolean updateAmountAndPriceById(int amount, int price, int id) {
-        boolean result = false;
         try {
             connection = CreateConnection.createConnection();
             pst = connection.prepareStatement(SQLBill.UPDATE_AMOUNT_BY_ID.QUERY);
             pst.setInt(1, amount);
             pst.setInt(2, price);
             pst.setInt(3, id);
-            result = pst.execute();
-            logger.debug("Bill with {} id was changed to {} amount amd {} price", id, amount, price);
+            int i = pst.executeUpdate();
+            if (i > 0) {
+                logger.debug("Bill with {} id was changed to {} amount amd {} price", id, amount, price);
+                return true;
+            }
         } catch (SQLException e) {
             logger.error("Can't update bill with {} id to {} amount and {} price", id, amount, price);
         } finally {
             close(connection);
             close(pst);
         }
-        return result;
+        return false;
     }
 
     public boolean updateConfirmationById(int id) {
-        boolean result = false;
         try {
             connection = CreateConnection.createConnection();
             pst = connection.prepareStatement(SQLBill.UPDATE_CONFIRMATION_BY_ID.QUERY);
             pst.setBoolean(1, true);
             pst.setInt(2, id);
-            result = pst.execute();
-            logger.debug("Bill with {} id was confirmed", id);
+            int i = pst.executeUpdate();
+            if (i > 0) {
+                logger.debug("Bill with {} id was confirmed", id);
+                return true;
+            }
         } catch (SQLException e) {
             logger.error("Can't confirm bill with {} id", id, e);
         } finally {
             close(connection);
             close(pst);
         }
-        return result;
+        return false;
     }
 
     enum SQLBill {
