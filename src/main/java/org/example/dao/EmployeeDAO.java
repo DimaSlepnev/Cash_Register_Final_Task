@@ -9,6 +9,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class EmployeeDAO implements DAO<Employee, Integer> {
+    /*
+   Layer interaction with database entity - Employee
+    */
     private static final Logger logger = LoggerFactory.getLogger(EmployeeDAO.class);
     private Statement st = null;
     Connection connection = null;
@@ -154,6 +157,9 @@ public class EmployeeDAO implements DAO<Employee, Integer> {
         return result;
     }
 
+    /*
+    When employee login, we must find his login and password in database
+     */
     public Employee findByLoginAndPass(String login, String pass) {
         Employee employee = null;
         try {
@@ -179,6 +185,10 @@ public class EmployeeDAO implements DAO<Employee, Integer> {
         }
         return employee;
     }
+
+    /*
+    Login must be unique, so we check it
+     */
 
     public boolean loginIsExist(String login) {
         try {

@@ -10,6 +10,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class WarehouseDAO implements DAO<Warehouse, Integer> {
+
+    /*
+   Layer interaction with database entity - Warehouse
+    */
     private static final Logger logger = LoggerFactory.getLogger(WarehouseDAO.class);
     private Statement st = null;
     Connection connection = null;
@@ -148,6 +152,9 @@ public class WarehouseDAO implements DAO<Warehouse, Integer> {
         return result;
     }
 
+    /*
+    Find product to avoid duplicates
+     */
     public Warehouse findByName(String productName) {
         Warehouse warehouse = null;
         try {
@@ -171,6 +178,9 @@ public class WarehouseDAO implements DAO<Warehouse, Integer> {
         return warehouse;
     }
 
+    /*
+    Find product to avoid duplicates
+     */
     public Warehouse isExist(String productName) {
         Warehouse warehouse = new Warehouse.Builder().withProduct("0").build();
         try {
@@ -194,6 +204,9 @@ public class WarehouseDAO implements DAO<Warehouse, Integer> {
         return warehouse;
     }
 
+    /*
+    When senior cashier delete bill we must come back amount to warehouse
+     */
     public boolean updateAmount(int amount, String productName) {
         Warehouse warehouse = WarehouseService.service().findByName(productName);
         try {

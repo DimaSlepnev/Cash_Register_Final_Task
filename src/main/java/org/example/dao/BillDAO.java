@@ -9,6 +9,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class BillDAO implements DAO<Bill, Integer> {
+
+    /*
+    Layer interaction with database entity - Bill
+     */
     private static final Logger logger = LoggerFactory.getLogger(BillDAO.class);
     private Statement st = null;
     Connection connection = null;
@@ -160,6 +164,9 @@ public class BillDAO implements DAO<Bill, Integer> {
         return result;
     }
 
+    /*
+    When senior cashier edit bill this data write to database
+     */
     public boolean updateAmountAndPriceById(int amount, int price, int id) {
         try {
             connection = CreateConnection.createConnection();
@@ -181,6 +188,9 @@ public class BillDAO implements DAO<Bill, Integer> {
         return false;
     }
 
+    /*
+    Remember in database when senior cashier confirm bill
+     */
     public boolean updateConfirmationById(int id) {
         try {
             connection = CreateConnection.createConnection();

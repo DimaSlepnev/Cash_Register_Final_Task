@@ -6,6 +6,9 @@ import java.sql.SQLException;
 import java.util.ResourceBundle;
 
 public class CreateConnection {
+    /*
+    Class create and return connection to database
+    */
     private static final ResourceBundle resource = ResourceBundle.getBundle("database");
     private static final String url = resource.getString("db.url");
     private static final String user = resource.getString("db.user");
