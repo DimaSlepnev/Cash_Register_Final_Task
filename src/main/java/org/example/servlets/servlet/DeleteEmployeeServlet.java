@@ -14,19 +14,9 @@ import java.io.IOException;
 public class DeleteEmployeeServlet extends HttpServlet{
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        String idStr = req.getParameter("id");
-        if(EmployeeService.service().deleteById(Integer.parseInt(idStr))){
-            req.setAttribute("employees", EmployeeService.service().findAll());
-            Employee employee = (Employee) req.getSession().getAttribute("employee");
-            req.setAttribute("eId",employee.getId());
-            req.setAttribute("employeeDelete",1);
-            getServletContext().getRequestDispatcher("/WEB-INF/view/showAllEmployees.jsp").forward(req,resp);
-        }else {
-            req.setAttribute("employees", EmployeeService.service().findAll());
-            Employee employee = (Employee) req.getSession().getAttribute("employee");
-            req.setAttribute("eId",employee.getId());
-            req.setAttribute("employeeDeleteError",1);
-            getServletContext().getRequestDispatcher("/WEB-INF/view/showAllEmployees.jsp").forward(req,resp);
-        }
+        String idStr = req.getParameter("empIdDelete");
+        int id = Integer.parseInt(idStr);
+        EmployeeService.service().deleteById(id);
+        resp.sendRedirect("redirectToAllEmployees");
     }
 }

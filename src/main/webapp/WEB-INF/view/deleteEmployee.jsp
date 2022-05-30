@@ -15,7 +15,7 @@
 
 <html>
 <head>
-    <title>Edit employee</title>
+    <title>Delete employee</title>
 </head>
 <body>
 <%@include file="header.jsp"%>
@@ -26,7 +26,7 @@
             <label class="col-sm-2 col-form-label">${id}:</label>
             <div class="col-sm-10">
                 <c:out value="${emp.id}"/>
-                <input name="id" type="hidden" value="${emp.id}">
+                <input name="empIdDelete" type="hidden" value="${emp.id}">
             </div>
         </div>
         <div class="form-group row">

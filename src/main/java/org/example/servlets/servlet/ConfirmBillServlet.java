@@ -17,7 +17,7 @@ public class ConfirmBillServlet extends HttpServlet {
         String confirmation = req.getParameter("confirmation");
         String idStr = req.getParameter("id");
         Bill bill = BillService.service().findModelById(Integer.parseInt(idStr));
-        if(confirmation.equals("yes")|| confirmation.equals("так")) {
+        if(confirmation.equals("yes") || confirmation.equals("так")) {
             BillService.service().updateConfirmationById(bill.getId());
             req.setAttribute("billConfirm", 1);
         }

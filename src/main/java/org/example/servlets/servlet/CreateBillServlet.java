@@ -32,6 +32,7 @@ public class CreateBillServlet extends HttpServlet {
                         withAmount(amount).
                         withPrice(price).
                         withConfirmation(false).build();
+                WarehouseService.service().updateAmount(-amount, warehouse.getProduct());
                 BillService.service().create(bill);
                 req.setAttribute("createBill",1);
                 getServletContext().getRequestDispatcher(createBillPath).forward(req, resp);

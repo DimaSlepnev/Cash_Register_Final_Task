@@ -120,11 +120,9 @@ public class EmployeeDAO implements DAO<Employee, Integer> {
             connection = CreateConnection.createConnection();
             pst = connection.prepareStatement(SQLEmployee.DELETE_EMPLOYEE_BY_ID.QUERY);
             pst.setInt(1, id);
-            int i = pst.executeUpdate();
-            if (i > 0) {
+            pst.executeUpdate();
                 logger.debug("Employee with id {} was removed", id);
                 return true;
-            }
         } catch (SQLException e) {
             logger.error("Can't delete employee with {} id", id);
         } finally {
