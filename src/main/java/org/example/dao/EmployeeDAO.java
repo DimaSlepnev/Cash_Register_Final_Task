@@ -19,7 +19,7 @@ public class EmployeeDAO implements DAO<Employee, Integer> {
 
 
     @Override
-    public boolean create(Employee employee) {
+    public void create(Employee employee) {
         try {
             connection = CreateConnection.createConnection();
             pst = connection.prepareStatement(SQLEmployee.CREATE_EMPLOYEE.QUERY);
@@ -28,18 +28,14 @@ public class EmployeeDAO implements DAO<Employee, Integer> {
             pst.setString(3, employee.getPass());
             pst.setString(4, employee.getFirstName());
             pst.setString(5, employee.getSecondName());
-            int i = pst.executeUpdate();
-            if (i > 0) {
-                logger.debug("Add new employee {}", employee);
-                return true;
-            }
+            pst.executeUpdate();
+            logger.debug("Add new employee {}", employee);
         } catch (SQLException e) {
             logger.error("Employee {} wasn't added", employee);
         } finally {
             close(connection);
             close(pst);
         }
-        return false;
     }
 
     @Override
@@ -121,8 +117,8 @@ public class EmployeeDAO implements DAO<Employee, Integer> {
             pst = connection.prepareStatement(SQLEmployee.DELETE_EMPLOYEE_BY_ID.QUERY);
             pst.setInt(1, id);
             pst.executeUpdate();
-                logger.debug("Employee with id {} was removed", id);
-                return true;
+            logger.debug("Employee with id {} was removed", id);
+            return true;
         } catch (SQLException e) {
             logger.error("Can't delete employee with {} id", id);
         } finally {
@@ -133,7 +129,7 @@ public class EmployeeDAO implements DAO<Employee, Integer> {
     }
 
     @Override
-    public boolean delete(Employee employee) {
+    public void delete(Employee employee) {
         boolean result = false;
         try {
             connection = CreateConnection.createConnection();
@@ -144,7 +140,7 @@ public class EmployeeDAO implements DAO<Employee, Integer> {
             pst.setString(4, employee.getPass());
             pst.setString(5, employee.getFirstName());
             pst.setString(6, employee.getSecondName());
-            result = pst.execute();
+            pst.executeUpdate();
             logger.debug("{} with id {} was removed", employee, employee.getId());
         } catch (SQLException e) {
             logger.error("Can't delete {} with id {}", employee, employee.getId());
@@ -152,7 +148,6 @@ public class EmployeeDAO implements DAO<Employee, Integer> {
             close(connection);
             close(pst);
         }
-        return result;
     }
 
     /*
@@ -204,6 +199,102 @@ public class EmployeeDAO implements DAO<Employee, Integer> {
             close(pst);
         }
         return false;
+    }
+
+    public List<Employee> findALlWithPagination(int start, int total) {
+        List<Employee> employees = new ArrayList();
+        try {
+            connection = CreateConnection.createConnection();
+            pst = connection.prepareStatement("select * from employee limit " + (start - 1) + "," + total);
+            ResultSet rs = pst.executeQuery();
+            while (rs.next()) {
+                Employee employee = new Employee.Builder()
+                        .withId(rs.getInt(1))
+                        .withPosition(rs.getString(2))
+                        .withLogin(rs.getString(3))
+                        .withPass(rs.getString(4)).withFirstName(rs.getString(5))
+                        .withLastName(rs.getString(6)).built();
+                employees.add(employee);
+            }
+        } catch (Exception e) {
+            logger.error("Can't find all with pagination, List size is: {}, start: {}, total: {}", employees.size() , start, total);
+        } finally {
+            close(connection);
+            close(pst);
+        }
+        return employees;
+    }
+
+    public int numberOfRows() {
+        int numberOfRows = 0;
+        try {
+            connection = CreateConnection.createConnection();
+            pst = connection.prepareStatement("SELECT COUNT(*) FROM employee");
+            ResultSet rs = pst.executeQuery();
+            while (rs.next()) {
+                numberOfRows = rs.getInt(1);
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        } finally {
+            close(connection);
+            close(pst);
+        }
+        return  numberOfRows;
+    }
+
+    public List<Employee> sortingBy(String sorting, int start, int total){
+        List<Employee> employees = new ArrayList();
+        String pos = "position";
+        try {
+            connection = CreateConnection.createConnection();
+            String preQuery = ("select * from employee ");
+            String postQuery = (" limit " + (start - 1) + "," + total);
+            switch (sorting){
+                case "id_ASC":
+                    pst = connection.prepareStatement(preQuery + " ORDER BY id ASC " + postQuery);
+                    break;
+                case "id_DESC":
+                    pst = connection.prepareStatement(preQuery + " ORDER BY id DESC " + postQuery);
+                    break;
+                case "position_ASC":
+                    pst = connection.prepareStatement(preQuery + " ORDER BY " + pos + " ASC " + postQuery);
+                    break;
+                case "position_DESC":
+                    pst = connection.prepareStatement(preQuery+ " ORDER BY " + pos + " DESC " + postQuery);
+                    break;
+                case "name_ASC":
+                    pst = connection.prepareStatement(preQuery+ " ORDER BY first_name ASC " + postQuery);
+                    break;
+                case "name_DESC":
+                    pst = connection.prepareStatement(preQuery+ " ORDER BY first_name DESC " + postQuery);
+                    break;
+                case "surname_ASC":
+                    pst = connection.prepareStatement(preQuery + " ORDER BY second_name ASC " + postQuery);
+                    break;
+                case "surname_DESC":
+                    pst = connection.prepareStatement(preQuery+ " ORDER BY second_name DESC " + postQuery);
+                    break;
+                default:
+                    pst = connection.prepareStatement(preQuery + " ORDER BY id ASC " + postQuery);
+            }
+            ResultSet rs = pst.executeQuery();
+            while (rs.next()) {
+                Employee employee = new Employee.Builder()
+                        .withId(rs.getInt(1))
+                        .withPosition(rs.getString(2))
+                        .withLogin(rs.getString(3))
+                        .withPass(rs.getString(4)).withFirstName(rs.getString(5))
+                        .withLastName(rs.getString(6)).built();
+                employees.add(employee);
+            }
+        } catch (Exception e) {
+            logger.error("Can't find all with pagination, List size is: {}, start: {}, total: {}", employees.size() , start, total);
+        } finally {
+            close(connection);
+            close(pst);
+        }
+        return employees;
     }
 
     enum SQLEmployee {

@@ -20,6 +20,7 @@
 
 <html>
 <head>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.3/font/bootstrap-icons.css">
     <title>All bills</title>
 </head>
 <body>
@@ -30,12 +31,90 @@
 <table class="table table-striped" id="billsTable">
     <thead>
     <tr>
-        <th scope="col">${id}</th>
-        <th scope="col">${productId}</th>
-        <th scope="col">${body}</th>
-        <th scope="col">${amount}</th>
-        <th scope="col">${price}</th>
-        <th scope="col">${confirmation}</th>
+        <th scope="col">${id}
+            <form action="showAllBillsAs">
+                <button class="btn btn-outline-primary" type="submit">
+                    <i class="bi bi-arrow-bar-up"></i>
+                </button>
+                <input type="hidden" name="sort" value="id_ASC">
+            </form>
+            <form action="showAllBillsAs">
+                <button class="btn btn-outline-primary" type="submit">
+                    <i class="bi bi-arrow-bar-down"></i>
+                </button>
+                <input type="hidden" name="sort" value="id_DESC">
+            </form>
+        </th>
+        <th scope="col">${productId}
+            <form action="showAllBillsAs">
+                <button class="btn btn-outline-primary" type="submit">
+                    <i class="bi bi-arrow-bar-up"></i>
+                </button>
+                <input type="hidden" name="sort" value="productId_ASC">
+            </form>
+            <form action="showAllBillsAs">
+                <button class="btn btn-outline-primary" type="submit">
+                    <i class="bi bi-arrow-bar-down"></i>
+                </button>
+                <input type="hidden" name="sort" value="productId_DESC">
+            </form>
+        </th>
+        <th scope="col">${body}
+            <form action="showAllBillsAs">
+                <button class="btn btn-outline-primary" type="submit">
+                    <i class="bi bi-arrow-bar-up"></i>
+                </button>
+                <input type="hidden" name="sort" value="body_ASC">
+            </form>
+            <form action="showAllBillsAs">
+                <button class="btn btn-outline-primary" type="submit">
+                    <i class="bi bi-arrow-bar-down"></i>
+                </button>
+                <input type="hidden" name="sort" value="body_DESC">
+            </form>
+        </th>
+        <th scope="col">${amount}
+            <form action="showAllBillsAs">
+                <button class="btn btn-outline-primary" type="submit">
+                    <i class="bi bi-arrow-bar-up"></i>
+                </button>
+                <input type="hidden" name="sort" value="amount_ASC">
+            </form>
+            <form action="showAllBillsAs">
+                <button class="btn btn-outline-primary" type="submit">
+                    <i class="bi bi-arrow-bar-down"></i>
+                </button>
+                <input type="hidden" name="sort" value="amount_DESC">
+            </form>
+        </th>
+        <th scope="col">${price}
+            <form action="showAllBillsAs">
+                <button class="btn btn-outline-primary" type="submit">
+                    <i class="bi bi-arrow-bar-up"></i>
+                </button>
+                <input type="hidden" name="sort" value="price_ASC">
+            </form>
+            <form action="showAllBillsAs">
+                <button class="btn btn-outline-primary" type="submit">
+                    <i class="bi bi-arrow-bar-down"></i>
+                </button>
+                <input type="hidden" name="sort" value="price_DESC">
+            </form>
+        </th>
+        <th scope="col">${confirmation}
+            <form action="showAllBillsAs">
+                <button class="btn btn-outline-primary" type="submit">
+                    <i class="bi bi-arrow-bar-up"></i>
+                </button>
+                <input type="hidden" name="sort" value="confirmation_ASC">
+            </form>
+            <form action="showAllBillsAs">
+                <button class="btn btn-outline-primary" type="submit">
+                    <i class="bi bi-arrow-bar-down"></i>
+                </button>
+                <input type="hidden" name="sort" value="confirmation_DESC">
+            </form>
+        </th>
         <%if (employee.getPosition().equals("senior cashier")) {%>
         <th scope="col">${action}</th>
         <%}%>
@@ -79,11 +158,17 @@
     </c:forEach>
     </tbody>
 </table>
-<script>
-    $(document).ready(function(){
-        $('#billsTable').dataTable();
-    });
-</script>
+<jsp:useBean id="numberOfPages" scope="request" type="java.lang.Integer"/>
+
+<center>
+    <table>
+        <ul class="pagination justify-content-center">
+            <c:forEach var="i" begin="1" end="${numberOfPages}">
+                <li class="page-item"><a class="page-link" href="?page=${i}">${i}</a></li>
+            </c:forEach>
+        </ul>
+    </table>
+</center>
 <my:footer/>
 </body>
 </html>

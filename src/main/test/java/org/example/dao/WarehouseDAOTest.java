@@ -21,14 +21,14 @@ class WarehouseDAOTest {
         System.out.println("Run after");
     }
 
-    @Test
+   /* @Test
     void create() {
         Warehouse warehouse = new Warehouse.Builder().
                 withProduct("Product").
                 withAmount(50).
                 withExpertId(1).build();
         assertEquals(true, WarehouseService.service().create(warehouse));
-    }
+    }*/
 
     @Test
     void findAll() {

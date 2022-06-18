@@ -10,12 +10,12 @@ import java.util.List;
 
 public interface DAO <Model,Key>{
    public static final Logger logger = LoggerFactory.getLogger(DAO.class);
-    boolean create(Model model);
+    void create(Model model);
     List<Model> findAll();
     Model findModelById(Key id);
     boolean update(Model model);
     boolean deleteById(Key id);
-    boolean delete(Model model);
+    void delete(Model model);
     default void close(PreparedStatement statement) {
         try {
             if (statement != null) {

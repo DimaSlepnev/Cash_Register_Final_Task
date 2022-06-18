@@ -29,7 +29,11 @@ public class EditBillServlet extends HttpServlet {
         try {
             int productId = Integer.parseInt(bill.getBody());
             Warehouse warehouse = WarehouseService.service().findModelById(productId);
-            if (warehouse != null && amount <= warehouse.getAmount()) {
+            int tempAmount = amount;
+            if(amount > amountWas){
+                tempAmount = amount - amountWas;
+            }
+            if (warehouse != null && tempAmount <= warehouse.getAmount()) {
                 BillService.service().updateAmountAndPriceById(amount,price, bill.getId());
                 if(amount > amountWas){
                     WarehouseService.service().updateAmount(-(amount - amountWas),bill.getBody());
@@ -38,15 +42,19 @@ public class EditBillServlet extends HttpServlet {
                 }
                 req.setAttribute("editBill",1);
                 req.setAttribute("bills", BillService.service().findAll());
-                getServletContext().getRequestDispatcher(allBillsPath).forward(req, resp);
+                resp.sendRedirect("redirectToAllBills");
             } else {
                 req.setAttribute("errorEditBill",1);
-                req.setAttribute("bills", BillService.service().findAll());
+                req.setAttribute("bill", BillService.service().findModelById(id));
                 getServletContext().getRequestDispatcher(editBillPath).forward(req, resp);
             }
         } catch (Exception e) {
             Warehouse warehouse = WarehouseService.service().findByName(bill.getBody());
-            if (warehouse != null && amount <= warehouse.getAmount()) {
+            int tempAmount = amount;
+            if(amount > amountWas){
+                tempAmount = amount - amountWas;
+            }
+            if (warehouse != null && tempAmount <= warehouse.getAmount()) {
                 BillService.service().updateAmountAndPriceById(amount,price, bill.getId());
                 if(amount > amountWas){
                     WarehouseService.service().updateAmount(-(amount - amountWas),bill.getBody());
@@ -55,10 +63,10 @@ public class EditBillServlet extends HttpServlet {
                 }
                 req.setAttribute("editBill",1);
                 req.setAttribute("bills", BillService.service().findAll());
-                getServletContext().getRequestDispatcher(allBillsPath).forward(req, resp);
+                resp.sendRedirect("redirectToAllBills");
             } else {
                 req.setAttribute("errorEditBill",1);
-                req.setAttribute("bills", BillService.service().findAll());
+                req.setAttribute("bill", BillService.service().findModelById(id));
                 getServletContext().getRequestDispatcher(editBillPath).forward(req, resp);
             }
         }

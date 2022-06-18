@@ -6,6 +6,7 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.example.model.Bill;
+import org.example.model.Employee;
 import org.example.model.Warehouse;
 import org.example.services.BillService;
 import org.example.services.WarehouseService;
@@ -19,10 +20,20 @@ public class DeleteBillServlet extends HttpServlet {
         String idStr = req.getParameter("id");
         Bill bill = BillService.service().findModelById(Integer.parseInt(idStr));
         Warehouse warehouse = WarehouseService.service().findModelById(bill.getProductId());
-        WarehouseService.service().updateAmount(bill.getAmount(), warehouse.getProduct());
+        Employee employee = (Employee) req.getSession().getAttribute("employee");
+        int empId = employee.getId();
+        if(warehouse != null) {
+            WarehouseService.service().updateAmount(bill.getAmount(), warehouse.getProduct());
+        } else {
+            Warehouse newWarehouse = new Warehouse.Builder()
+                    .withProduct(bill.getBody())
+                    .withAmount(bill.getAmount())
+                    .withExpertId(empId).build();
+          WarehouseService.service().create(newWarehouse);
+        }
         BillService.service().deleteById(bill.getId());
         req.setAttribute("bills", BillService.service().findAll());
         req.setAttribute("deleteBill",1);
-        getServletContext().getRequestDispatcher("/WEB-INF/view/showAllBills.jsp").forward(req,resp);
+        resp.sendRedirect("redirectToAllBills");
     }
 }

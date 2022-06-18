@@ -1,6 +1,7 @@
 package org.example.dao;
 
 import org.example.connection.CreateConnection;
+import org.example.model.Employee;
 import org.example.model.Warehouse;
 import org.example.services.WarehouseService;
 import org.slf4j.*;
@@ -19,26 +20,23 @@ public class WarehouseDAO implements DAO<Warehouse, Integer> {
     Connection connection = null;
     PreparedStatement pst = null;
 
+
     @Override
-    public boolean create(Warehouse warehouse) {
+    public void create(Warehouse warehouse) {
         try {
             connection = CreateConnection.createConnection();
             pst = connection.prepareStatement(SQLWarehouse.CREATE_PRODUCT.QUERY);
             pst.setString(1, warehouse.getProduct());
             pst.setInt(2, warehouse.getAmount());
             pst.setInt(3, warehouse.getExpertId());
-            int i = pst.executeUpdate();
-            if (i > 0) {
-                logger.debug("Add new product {} to warehouse", warehouse);
-                return true;
-            }
+            pst.executeUpdate();
+            logger.debug("Add new product {} to warehouse", warehouse);
         } catch (SQLException e) {
             logger.error("Product {} wasn't added to warehouse", warehouse);
         } finally {
             close(connection);
             close(pst);
         }
-        return false;
     }
 
     @Override
@@ -132,8 +130,7 @@ public class WarehouseDAO implements DAO<Warehouse, Integer> {
     }
 
     @Override
-    public boolean delete(Warehouse warehouse) {
-        boolean result = false;
+    public void delete(Warehouse warehouse) {
         try {
             connection = CreateConnection.createConnection();
             pst = connection.prepareStatement(SQLWarehouse.DELETE_PRODUCT.QUERY);
@@ -141,7 +138,7 @@ public class WarehouseDAO implements DAO<Warehouse, Integer> {
             pst.setString(2, warehouse.getProduct());
             pst.setInt(3, warehouse.getAmount());
             pst.setInt(4, warehouse.getExpertId());
-            result = pst.execute();
+            pst.executeUpdate();
             logger.debug("{} with id {} was removed from warehouse", warehouse, warehouse.getId());
         } catch (SQLException e) {
             logger.error("Can't delete {} with id {}", warehouse, warehouse.getId());
@@ -149,7 +146,6 @@ public class WarehouseDAO implements DAO<Warehouse, Integer> {
             close(connection);
             close(pst);
         }
-        return result;
     }
 
     /*
@@ -215,6 +211,7 @@ public class WarehouseDAO implements DAO<Warehouse, Integer> {
             pst.setInt(1, warehouse.getAmount() + amount);
             pst.setString(2, warehouse.getProduct());
             int i = pst.executeUpdate();
+            System.out.println();
             if (i > 0) {
                 logger.debug("Product {} was updated to amount {}", warehouse, warehouse.getAmount() + amount);
                 return true;
@@ -226,6 +223,99 @@ public class WarehouseDAO implements DAO<Warehouse, Integer> {
             close(pst);
         }
         return false;
+    }
+
+    public List<Warehouse> findALlWithPagination(int start, int total) {
+        List<Warehouse> warehouseList = new ArrayList();
+        try {
+            connection = CreateConnection.createConnection();
+            pst = connection.prepareStatement("select * from warehouse limit " + (start - 1) + "," + total);
+            ResultSet rs = pst.executeQuery();
+            while (rs.next()) {
+                Warehouse warehouse = new Warehouse.Builder()
+                        .withId(rs.getInt(1))
+                        .withProduct(rs.getString(2))
+                        .withAmount(rs.getInt(3))
+                        .withExpertId(rs.getInt(4)).build();
+                warehouseList.add(warehouse);
+            }
+        } catch (Exception e) {
+            logger.error("Can't find all with pagination, List size is: {}, start: {}, total: {}", warehouseList.size() , start, total);
+        } finally {
+            close(connection);
+            close(pst);
+        }
+        return warehouseList;
+    }
+
+    public int numberOfRows() {
+        int numberOfRows = 0;
+        try {
+            connection = CreateConnection.createConnection();
+            pst = connection.prepareStatement("SELECT COUNT(*) FROM warehouse");
+            ResultSet rs = pst.executeQuery();
+            while (rs.next()) {
+                numberOfRows = rs.getInt(1);
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        } finally {
+            close(connection);
+            close(pst);
+        }
+        return  numberOfRows;
+    }
+
+    public List<Warehouse> sortingBy(String sorting, int start, int total) {
+        List<Warehouse> warehouseList = new ArrayList();
+        try {
+            connection = CreateConnection.createConnection();
+            String preQuery = ("select * from warehouse ");
+            String postQuery = (" limit " + (start - 1) + "," + total);
+            switch (sorting) {
+                case "id_ASC":
+                    pst = connection.prepareStatement(preQuery + " ORDER BY id ASC " + postQuery);
+                    break;
+                case "id_DESC":
+                    pst = connection.prepareStatement(preQuery + " ORDER BY id DESC " + postQuery);
+                    break;
+                case "product_ASC":
+                    pst = connection.prepareStatement(preQuery + " ORDER BY product ASC " + postQuery);
+                    break;
+                case "product_DESC":
+                    pst = connection.prepareStatement(preQuery + " ORDER BY product DESC " + postQuery);
+                    break;
+                case "amount_ASC":
+                    pst = connection.prepareStatement(preQuery + " ORDER BY amount ASC " + postQuery);
+                    break;
+                case "amount_DESC":
+                    pst = connection.prepareStatement(preQuery + " ORDER BY amount DESC " + postQuery);
+                    break;
+                case "expertId_ASC":
+                    pst = connection.prepareStatement(preQuery + " ORDER BY expert_id ASC " + postQuery);
+                    break;
+                case "surname_DESC":
+                    pst = connection.prepareStatement(preQuery + " ORDER BY expert_id DESC " + postQuery);
+                    break;
+                default:
+                    pst = connection.prepareStatement(preQuery + " ORDER BY id ASC " + postQuery);
+            }
+            ResultSet rs = pst.executeQuery();
+            while (rs.next()) {
+                Warehouse warehouse = new Warehouse.Builder()
+                        .withId(rs.getInt(1))
+                        .withProduct(rs.getString(2))
+                        .withAmount(rs.getInt(3))
+                        .withExpertId(rs.getInt(4)).build();
+                warehouseList.add(warehouse);
+            }
+        } catch (Exception e) {
+            logger.error("Can't find all with pagination, List size is: {}, start: {}, total: {}", warehouseList.size(), start, total);
+        } finally {
+            close(connection);
+            close(pst);
+        }
+        return warehouseList;
     }
 
     enum SQLWarehouse {

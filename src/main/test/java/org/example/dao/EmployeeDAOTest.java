@@ -22,8 +22,8 @@ class EmployeeDAOTest {
         System.out.println("Run after");
     }
 
-    @Test
-    void create() {
+    /*@Test*/
+ /*   void create() {
         Employee employee = new Employee.Builder().
                 withFirstName("name").
                 withLastName("surname").
@@ -31,7 +31,7 @@ class EmployeeDAOTest {
                 withLogin("login").
                 withPass("password").built();
         assertEquals(true, EmployeeService.service().create(employee));
-    }
+    }*/
 
     @Test
     void findAll() {

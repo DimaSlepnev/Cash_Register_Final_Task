@@ -23,13 +23,62 @@
 <%if (request.getAttribute("employeeDelete") != null) {%>
 <%@include file="successfully.jsp" %>
 <%}%>
-<table class="table table-striped" id="employeeTable">
+<table class="table table-striped">
     <thead>
     <tr>
-        <th scope="col">${id}</th>
-        <th scope="col">${position}</th>
-        <th scope="col">${firstName}</th>
-        <th scope="col">${secondName}</th>
+        <th scope="col">${id}
+            <form action="showAllEmployeesAs">
+                <button class="btn btn-outline-primary" type="submit">
+            <i class="bi bi-arrow-bar-up"></i>
+                </button>
+                <input type="hidden" name="sort" value="id_ASC">
+            </form>
+            <form action="showAllEmployeesAs">
+                <button class="btn btn-outline-primary" type="submit">
+                    <i class="bi bi-arrow-bar-down"></i>
+                </button>
+                <input type="hidden" name="sort" value="id_DESC">
+            </form>
+        </th>
+        <th scope="col">${position}
+            <form action="showAllEmployeesAs">
+                <button class="btn btn-outline-primary" type="submit">
+                    <i class="bi bi-arrow-bar-up"></i>
+                </button>
+                <input type="hidden" name="sort" value="position_ASC">
+            </form>
+            <form action="showAllEmployeesAs">
+                <button class="btn btn-outline-primary" type="submit">
+                    <i class="bi bi-arrow-bar-down"></i>
+                </button>
+                <input type="hidden" name="sort" value="position_DESC">
+            </form></th>
+        <th scope="col">${firstName}
+            <form action="showAllEmployeesAs">
+                <button class="btn btn-outline-primary" type="submit">
+                    <i class="bi bi-arrow-bar-up"></i>
+                </button>
+                <input type="hidden" name="sort" value="name_ASC">
+            </form>
+            <form action="showAllEmployeesAs">
+                <button class="btn btn-outline-primary" type="submit">
+                    <i class="bi bi-arrow-bar-down"></i>
+                </button>
+                <input type="hidden" name="sort" value="name_DESC">
+            </form></th>
+        <th scope="col">${secondName}
+            <form action="showAllEmployeesAs">
+                <button class="btn btn-outline-primary" type="submit">
+                    <i class="bi bi-arrow-bar-up"></i>
+                </button>
+                <input type="hidden" name="sort" value="surname_ASC">
+            </form>
+            <form action="showAllEmployeesAs">
+                <button class="btn btn-outline-primary" type="submit">
+                    <i class="bi bi-arrow-bar-down"></i>
+                </button>
+                <input type="hidden" name="sort" value="surname_DESC">
+            </form></th>
         <%if (employee.getPosition().equals("senior cashier")) {%>
         <th scope="col">${action}</th>
         <%}%>
@@ -60,11 +109,19 @@
     </c:forEach>
     </tbody>
 </table>
-<script>
-    $(document).ready(function(){
-        $('#employeeTable').dataTable();
-    });
-</script>
+
+<jsp:useBean id="numberOfPages" scope="request" type="java.lang.Integer"/>
+
+<center>
+    <table>
+        <ul class="pagination justify-content-center">
+        <c:forEach var="i" begin="1" end="${numberOfPages}">
+            <li class="page-item"><a class="page-link" href="?page=${i}">${i}</a></li>
+        </c:forEach>
+        </ul>
+    </table>
+</center>
+
 <my:footer/>
 </body>
 </html>

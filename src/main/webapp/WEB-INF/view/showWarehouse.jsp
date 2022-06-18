@@ -13,6 +13,7 @@
 
 <html>
 <head>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.3/font/bootstrap-icons.css">
     <title>Warehouse</title>
 </head>
 <body>
@@ -20,14 +21,66 @@
 <table class="table table-striped" id="warehouseTable">
     <thead>
     <tr>
-        <th scope="col">${productId}</th>
-        <th scope="col">${productName}</th>
-        <th scope="col">${productAmount}</th>
-        <th scope="col">${whoMade}</th>
+        <th scope="col">${productId}
+            <form action="showWarehouseAs">
+                <button class="btn btn-outline-primary" type="submit">
+                    <i class="bi bi-arrow-bar-up"></i>
+                </button>
+                <input type="hidden" name="sort" value="id_ASC">
+            </form>
+            <form action="showWarehouseAs">
+                <button class="btn btn-outline-primary" type="submit">
+                    <i class="bi bi-arrow-bar-down"></i>
+                </button>
+                <input type="hidden" name="sort" value="id_DESC">
+            </form>
+        </th>
+        <th scope="col">${productName}
+            <form action="showWarehouseAs">
+                <button class="btn btn-outline-primary" type="submit">
+                    <i class="bi bi-arrow-bar-up"></i>
+                </button>
+                <input type="hidden" name="sort" value="product_ASC">
+            </form>
+            <form action="showWarehouseAs">
+                <button class="btn btn-outline-primary" type="submit">
+                    <i class="bi bi-arrow-bar-down"></i>
+                </button>
+                <input type="hidden" name="sort" value="product_DESC">
+            </form>
+        </th>
+        <th scope="col">${productAmount}
+            <form action="showWarehouseAs">
+                <button class="btn btn-outline-primary" type="submit">
+                    <i class="bi bi-arrow-bar-up"></i>
+                </button>
+                <input type="hidden" name="sort" value="amount_ASC">
+            </form>
+            <form action="showWarehouseAs">
+                <button class="btn btn-outline-primary" type="submit">
+                    <i class="bi bi-arrow-bar-down"></i>
+                </button>
+                <input type="hidden" name="sort" value="amount_DESC">
+            </form>
+        </th>
+        <th scope="col">${whoMade}
+            <form action="showWarehouseAs">
+                <button class="btn btn-outline-primary" type="submit">
+                    <i class="bi bi-arrow-bar-up"></i>
+                </button>
+                <input type="hidden" name="sort" value="expertId_ASC">
+            </form>
+            <form action="showWarehouseAs">
+                <button class="btn btn-outline-primary" type="submit">
+                    <i class="bi bi-arrow-bar-down"></i>
+                </button>
+                <input type="hidden" name="sort" value="expertId_DESC">
+            </form>
+        </th>
     </tr>
     </thead>
     <tbody>
-    <jsp:useBean id="warehouses" scope="session" type="java.util.List"/>
+    <jsp:useBean id="warehouses" scope="request" type="java.util.List"/>
     <c:forEach var="warehouse" items="${warehouses}">
         <tr>
             <td><c:out value="${warehouse.id}"/></td>
@@ -39,11 +92,17 @@
 
     </tbody>
 </table>
-<script>
-    $(document).ready(function(){
-        $('#warehouseTable').dataTable();
-    });
-</script>
+<jsp:useBean id="numberOfPages" scope="request" type="java.lang.Integer"/>
+
+<center>
+    <table>
+        <ul class="pagination justify-content-center">
+            <c:forEach var="i" begin="1" end="${numberOfPages}">
+                <li class="page-item"><a class="page-link" href="?page=${i}">${i}</a></li>
+            </c:forEach>
+        </ul>
+    </table>
+</center>
 <my:footer/>
 </body>
 </html>

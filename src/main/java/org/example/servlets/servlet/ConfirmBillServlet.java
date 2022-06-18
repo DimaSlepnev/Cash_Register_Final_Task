@@ -22,6 +22,6 @@ public class ConfirmBillServlet extends HttpServlet {
             req.setAttribute("billConfirm", 1);
         }
         req.setAttribute("bills",BillService.service().findAll());
-        getServletContext().getRequestDispatcher("/WEB-INF/view/showAllBills.jsp").forward(req,resp);
+        resp.sendRedirect("redirectToAllBills");
     }
 }

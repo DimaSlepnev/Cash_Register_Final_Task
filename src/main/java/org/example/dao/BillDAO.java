@@ -2,6 +2,8 @@ package org.example.dao;
 
 import org.example.connection.CreateConnection;
 import org.example.model.Bill;
+import org.example.model.Employee;
+import org.example.model.Warehouse;
 import org.slf4j.*;
 
 import java.sql.*;
@@ -19,28 +21,26 @@ public class BillDAO implements DAO<Bill, Integer> {
     PreparedStatement pst = null;
 
 
+
     @Override
-    public boolean create(Bill bill) {
+    public void create(Bill bill) {
         try {
             connection = CreateConnection.createConnection();
+
             pst = connection.prepareStatement(SQLBill.CREATE_BILL.QUERY);
             pst.setInt(1, bill.getProductId());
             pst.setString(2, bill.getBody());
             pst.setInt(3, bill.getAmount());
             pst.setInt(4, bill.getPrice());
             pst.setBoolean(5, bill.isConfirmation());
-            int i = pst.executeUpdate();
-            if (i > 0) {
-                logger.debug("Create new bill {}", bill);
-                return true;
-            }
+            pst.executeUpdate();
+            logger.debug("Create new bill {}", bill);
         } catch (SQLException e) {
             logger.error("Bill {} wasn't add", bill);
         } finally {
             close(connection);
             close(pst);
         }
-        return false;
     }
 
     @Override
@@ -142,7 +142,7 @@ public class BillDAO implements DAO<Bill, Integer> {
     }
 
     @Override
-    public boolean delete(Bill bill) {
+    public void delete(Bill bill) {
         boolean result = false;
         try {
             connection = CreateConnection.createConnection();
@@ -153,7 +153,7 @@ public class BillDAO implements DAO<Bill, Integer> {
             pst.setInt(4, bill.getAmount());
             pst.setInt(5, bill.getPrice());
             pst.setBoolean(6, bill.isConfirmation());
-            result = pst.execute();
+            pst.executeUpdate();
             logger.debug("{} with id {} was removed", bill, bill.getId());
         } catch (SQLException e) {
             logger.error("Can't delete {} with id {}", bill, bill.getId());
@@ -161,7 +161,6 @@ public class BillDAO implements DAO<Bill, Integer> {
             close(connection);
             close(pst);
         }
-        return result;
     }
 
     /*
@@ -209,6 +208,115 @@ public class BillDAO implements DAO<Bill, Integer> {
             close(pst);
         }
         return false;
+    }
+
+    public List<Bill> findALlWithPagination(int start, int total) {
+        List<Bill> bills = new ArrayList();
+        try {
+            connection = CreateConnection.createConnection();
+            pst = connection.prepareStatement("select * from bill limit " + (start - 1) + "," + total);
+            ResultSet rs = pst.executeQuery();
+            while (rs.next()) {
+                Bill bill = new Bill.Builder()
+                        .withId(rs.getInt(1))
+                        .withProductId(rs.getInt(2))
+                        .withBody(rs.getString(3))
+                        .withAmount(rs.getInt(4))
+                        .withPrice(rs.getInt(5))
+                        .withConfirmation(rs.getBoolean(6)).build();
+                bills.add(bill);
+            }
+        } catch (Exception e) {
+            logger.error("Can't find all with pagination, List size is: {}, start: {}, total: {}", bills.size() , start, total);
+        } finally {
+            close(connection);
+            close(pst);
+        }
+        return bills;
+    }
+
+    public int numberOfRows() {
+        int numberOfRows = 0;
+        try {
+            connection = CreateConnection.createConnection();
+            pst = connection.prepareStatement("SELECT COUNT(*) FROM bill");
+            ResultSet rs = pst.executeQuery();
+            while (rs.next()) {
+                numberOfRows = rs.getInt(1);
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        } finally {
+            close(connection);
+            close(pst);
+        }
+        return  numberOfRows;
+    }
+
+    public List<Bill> sortingBy(String sorting, int start, int total){
+        List<Bill> bills = new ArrayList();
+        try {
+            connection = CreateConnection.createConnection();
+            String preQuery = ("select * from bill ");
+            String postQuery = (" limit " + (start - 1) + "," + total);
+            switch (sorting){
+                case "id_ASC":
+                    pst = connection.prepareStatement(preQuery + " ORDER BY id ASC " + postQuery);
+                    break;
+                case "id_DESC":
+                    pst = connection.prepareStatement(preQuery + " ORDER BY id DESC " + postQuery);
+                    break;
+                case "productId_ASC":
+                    pst = connection.prepareStatement(preQuery + " ORDER BY product_id ASC " + postQuery);
+                    break;
+                case "productId_DESC":
+                    pst = connection.prepareStatement(preQuery+ " ORDER BY product_id DESC " + postQuery);
+                    break;
+                case "body_ASC":
+                    pst = connection.prepareStatement(preQuery+ " ORDER BY body ASC " + postQuery);
+                    break;
+                case "body_DESC":
+                    pst = connection.prepareStatement(preQuery+ " ORDER BY body DESC " + postQuery);
+                    break;
+                case "amount_ASC":
+                    pst = connection.prepareStatement(preQuery + " ORDER BY amount ASC " + postQuery);
+                    break;
+                case "amount_DESC":
+                    pst = connection.prepareStatement(preQuery+ " ORDER BY amount DESC " + postQuery);
+                    break;
+                case "price_ASC":
+                    pst = connection.prepareStatement(preQuery + " ORDER BY price ASC " + postQuery);
+                    break;
+                case "price_DESC":
+                    pst = connection.prepareStatement(preQuery+ " ORDER BY price DESC " + postQuery);
+                    break;
+                case "confirmation_ASC":
+                    pst = connection.prepareStatement(preQuery + " ORDER BY confirmation ASC " + postQuery);
+                    break;
+                case "confirmation_DESC":
+                    pst = connection.prepareStatement(preQuery+ " ORDER BY confirmation DESC " + postQuery);
+                    break;
+                default:
+                    pst = connection.prepareStatement(preQuery + " ORDER BY id ASC " + postQuery);
+            }
+            ResultSet rs = pst.executeQuery();
+            while (rs.next()) {
+                Bill bill = new Bill.Builder()
+                        .withId(rs.getInt(1))
+                        .withProductId(rs.getInt(2))
+                        .withBody(rs.getString(3))
+                        .withAmount(rs.getInt(4))
+                        .withPrice(rs.getInt(5))
+                        .withConfirmation(rs.getBoolean(6)).build();
+                bills.add(bill);
+            }
+        } catch (Exception e) {
+            logger.error("Can't find all with pagination, List size is: {}, start: {}, total: {}", bills.size() , start, total);
+        } finally {
+            close(connection);
+            close(pst);
+        }
+        return bills;
     }
 
     enum SQLBill {

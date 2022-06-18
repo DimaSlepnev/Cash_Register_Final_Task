@@ -20,8 +20,8 @@ class BillDAOTest {
         System.out.println("Run after");
     }
 
-    @Test
-    void create() {
+  /*  @Test
+  *//*  void create() {
         Bill bill = new Bill.Builder().
                 withProductId(7).
                 withBody("Bill").
@@ -29,7 +29,7 @@ class BillDAOTest {
                 withPrice(100).
                 withConfirmation(false).build();
         assertEquals(true, BillService.service().create(bill));
-    }
+    }*/
 
     @Test
     void findAll() {
