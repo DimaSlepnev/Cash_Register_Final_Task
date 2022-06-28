@@ -1,62 +1,48 @@
 package org.example.dao;
 
 import org.example.model.Bill;
-import org.example.services.BillService;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.sql.Connection;
+import java.util.List;
+
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
 
 class BillDAOTest {
 
-    @BeforeEach
-    void setUp() {
-        System.out.println("Run before");
-    }
-
-    @AfterEach
-    void tearDown() {
-        System.out.println("Run after");
-    }
-
-  /*  @Test
-  *//*  void create() {
-        Bill bill = new Bill.Builder().
-                withProductId(7).
-                withBody("Bill").
-                withAmount(5).
-                withPrice(100).
-                withConfirmation(false).build();
-        assertEquals(true, BillService.service().create(bill));
-    }*/
-
     @Test
-    void findAll() {
-        assertEquals(3, BillService.service().findAll().size());
-    }
+    public void BillDAOTest() {
+        Bill bill = mock(Bill.class);
+        BillDAO billDAO = mock(BillDAO.class);
+        when(billDAO.findAll()).thenReturn(mock(List.class));
+        when(billDAO.findModelById(1)).thenReturn(mock(Bill.class));
+        when(billDAO.update(bill)).thenReturn(true);
+        when(billDAO.deleteById(bill.getId())).thenReturn(false);
+        when(billDAO.numberOfRows()).thenReturn(1);
+        when(billDAO.updateAmountAndPriceById(1, 1, 0)).thenReturn(true);
+        when(billDAO.findALlWithPagination(1, 5)).thenReturn(mock(List.class));
+        when(billDAO.updateConfirmationById(0)).thenReturn(false);
+        when(billDAO.sortingBy("sorting",1,5)).thenReturn(mock(List.class));
 
-    @Test
-    void findModelById() {
-        Bill bill = BillService.service().findModelById(12);
-        assertEquals(7, bill.getProductId());
-        assertEquals("Bill", bill.getBody());
-        assertEquals(5, bill.getAmount());
-        assertEquals(100, bill.getPrice());
-    }
-
-    @Test
-    void updateAmountAndPriceById() {
-        assertEquals(true, BillService.service().updateAmountAndPriceById(10,150,12));
-    }
-
-    @Test
-    void updateConfirmationById() {
-        assertEquals(true,BillService.service().updateConfirmationById(12));
-    }
-
-    @Test
-    void deleteById() {
-        assertEquals(true, BillService.service().deleteById(12));
+        billDAO = spy(BillDAO.class);
+        billDAO.findAll();
+        verify(billDAO, times(1)).findAll();
+        billDAO.create(bill);
+        verify(billDAO, times(1)).create(bill);
+        billDAO.delete(bill);
+        verify(billDAO, times(1)).delete(bill);
+        billDAO.update(bill);
+        verify(billDAO, times(1)).update(bill);
+        billDAO.updateConfirmationById(0);
+        verify(billDAO, times(1)).updateConfirmationById(0);
+        billDAO.findModelById(0);
+        verify(billDAO, times(1)).findModelById(0);
+        billDAO.deleteById(0);
+        verify(billDAO, times(1)).deleteById(0);
+        billDAO.updateAmountAndPriceById(10,20,0);
+        verify(billDAO,times(1)).updateAmountAndPriceById(10,20,0);
+        billDAO.sortingBy("sort",1,5);
+        verify(billDAO,times(1)).sortingBy("sort",1,5);
     }
 }

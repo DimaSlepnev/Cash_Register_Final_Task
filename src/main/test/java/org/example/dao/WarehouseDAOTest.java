@@ -1,64 +1,49 @@
 package org.example.dao;
 
 import org.example.model.Warehouse;
-import org.example.services.WarehouseService;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import org.junit.Test;
 
+import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.Assert.*;
+import static org.mockito.Mockito.*;
 
-class WarehouseDAOTest {
-
-    @BeforeEach
-    void setUp() {
-        System.out.println("Run before");
-    }
-
-    @AfterEach
-    void tearDown() {
-        System.out.println("Run after");
-    }
-
-   /* @Test
-    void create() {
-        Warehouse warehouse = new Warehouse.Builder().
-                withProduct("Product").
-                withAmount(50).
-                withExpertId(1).build();
-        assertEquals(true, WarehouseService.service().create(warehouse));
-    }*/
+public class WarehouseDAOTest {
 
     @Test
-    void findAll() {
-        assertEquals(8, WarehouseService.service().findAll().size());
-    }
+    public void WarehouseDAOTest(){
+        Warehouse warehouse = mock(Warehouse.class);
+        WarehouseDAO warehouseDAO = mock(WarehouseDAO.class);
+        when(warehouseDAO.findAll()).thenReturn(mock(List.class));
+        when(warehouseDAO.findModelById(0)).thenReturn(mock(Warehouse.class));
+        when(warehouseDAO.update(warehouse)).thenReturn(false);
+        when(warehouseDAO.deleteById(0)).thenReturn(false);
+        when(warehouseDAO.findByName("name")).thenReturn(mock(Warehouse.class));
+        when(warehouseDAO.isExist("productName")).thenReturn(mock(Warehouse.class));
+        when(warehouseDAO.updateAmount(10,"productName")).thenReturn(true);
+        when(warehouseDAO.sortingBy("sorting",1,5)).thenReturn(mock(List.class));
 
-    @Test
-    void findModelById() {
-        Warehouse warehouse = WarehouseService.service().findModelById(7);
-        assertEquals("Mango", warehouse.getProduct());
-        assertEquals(45, warehouse.getAmount());
-        assertEquals(7, warehouse.getExpertId());
-    }
-
-    @Test
-    void updateAmount() {
-        assertEquals(true, WarehouseService.service().updateAmount(10, "Product"));
-    }
-
-    @Test
-    void deleteById() {
-        assertEquals(true, WarehouseService.service().deleteById(10));
-    }
-
-    @Test
-    void findByName() {
-        Warehouse warehouse = WarehouseService.service().findByName("Cucumber");
-        assertEquals("Cucumber", warehouse.getProduct());
-        Warehouse warehouse1 = WarehouseService.service().findByName("Car");
-        assertEquals(null, warehouse1);
+        warehouseDAO = spy(WarehouseDAO.class);
+        warehouseDAO.create(warehouse);
+        verify(warehouseDAO,times(1)).create(warehouse);
+        warehouseDAO.findAll();
+        verify(warehouseDAO,times(1)).findAll();
+        warehouseDAO.findModelById(0);
+        verify(warehouseDAO,times(1)).findModelById(0);
+        warehouseDAO.update(warehouse);
+        verify(warehouseDAO,times(1)).update(warehouse);
+        warehouseDAO.deleteById(0);
+        verify(warehouseDAO,times(1)).deleteById(0);
+        warehouseDAO.delete(warehouse);
+        verify(warehouseDAO,times(1)).delete(warehouse);
+        warehouseDAO.findByName("name");
+        verify(warehouseDAO,times(1)).findByName("name");
+        warehouseDAO.isExist("productName");
+        verify(warehouseDAO,times(1)).isExist("productName");
+        warehouseDAO.updateAmount(0,"potato");
+        verify(warehouseDAO,times(1)).updateAmount(0,"potato");
+        warehouseDAO.sortingBy("sorting",1,5);
+        verify(warehouseDAO,times(1)).sortingBy("sorting",1,5);
     }
 
 }

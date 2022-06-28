@@ -2,8 +2,6 @@ package org.example.dao;
 
 import org.example.connection.CreateConnection;
 import org.example.model.Bill;
-import org.example.model.Employee;
-import org.example.model.Warehouse;
 import org.slf4j.*;
 
 import java.sql.*;

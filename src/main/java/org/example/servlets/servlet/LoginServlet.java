@@ -24,7 +24,7 @@ public class LoginServlet extends HttpServlet {
         HttpSession session = req.getSession();
         Employee employee = EmployeeService.service().findByLoginAndPass(login, pass);
         if (employee != null) {
-            req.getSession().setAttribute("employee", employee);
+            session.setAttribute("employee", employee);
             doGet(req,resp);
         } else {
             getServletContext().getRequestDispatcher("/WEB-INF/view/login.jsp").forward(req,resp);

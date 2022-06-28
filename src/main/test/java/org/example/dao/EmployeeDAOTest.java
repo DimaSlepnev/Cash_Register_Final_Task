@@ -1,72 +1,47 @@
 package org.example.dao;
 
 import org.example.model.Employee;
-import org.example.services.EmployeeService;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import org.junit.Test;
 
-import java.util.ArrayList;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.Assert.*;
+import static org.mockito.Mockito.*;
 
-class EmployeeDAOTest {
-    @BeforeEach
-    void setUp() {
-        System.out.println("Run before");
-    }
-
-    @AfterEach
-    void tearDown() {
-        System.out.println("Run after");
-    }
-
-    /*@Test*/
- /*   void create() {
-        Employee employee = new Employee.Builder().
-                withFirstName("name").
-                withLastName("surname").
-                withPosition("position").
-                withLogin("login").
-                withPass("password").built();
-        assertEquals(true, EmployeeService.service().create(employee));
-    }*/
+public class EmployeeDAOTest {
 
     @Test
-    void findAll() {
-        assertEquals(5, EmployeeService.service().findAll().size());
+    public void EmployeeDAOTest(){
+        Employee employee = mock(Employee.class);
+        EmployeeDAO employeeDAO = mock(EmployeeDAO.class);
+        when(employeeDAO.findAll()).thenReturn(mock(List.class));
+        when(employeeDAO.findModelById(0)).thenReturn(mock(Employee.class));
+        when(employeeDAO.update(employee)).thenReturn(true);
+        when(employeeDAO.deleteById(0)).thenReturn(false);
+        when(employeeDAO.findByLoginAndPass("login","pass")).thenReturn(mock(Employee.class));
+        when(employeeDAO.loginIsExist("login")).thenReturn(false);
+        when(employeeDAO.sortingBy("sort",1,5)).thenReturn(mock(List.class));
+
+
+        employeeDAO = spy(EmployeeDAO.class);
+        employeeDAO.create(employee);
+        verify(employeeDAO,times(1)).create(employee);
+        employeeDAO.findAll();
+        verify(employeeDAO,times(1)).findAll();
+        employeeDAO.findModelById(0);
+        verify(employeeDAO,times(1)).findModelById(0);
+        employeeDAO.update(employee);
+        verify(employeeDAO,times(1)).update(employee);
+        employeeDAO.deleteById(0);
+        verify(employeeDAO,times(1)).deleteById(0);
+        employeeDAO.delete(employee);
+        verify(employeeDAO,times(1)).delete(employee);
+        employeeDAO.findByLoginAndPass("login","pass");
+        verify(employeeDAO,times(1)).findByLoginAndPass("login","pass");
+        employeeDAO.loginIsExist("login");
+        verify(employeeDAO,times(1)).loginIsExist("login");
+        employeeDAO.sortingBy("sorting",1,5);
+        verify(employeeDAO,times(1)).sortingBy("sorting",1,5);
     }
 
-    @Test
-    void findModelById() {
-        Employee employee = EmployeeService.service().findModelById(10);
-        assertEquals(10, employee.getId());
-        assertEquals("senior cashier", employee.getPosition());
-        assertEquals("seniorcash1", employee.getLogin());
-        assertEquals("Tyler", employee.getFirstName());
-        assertEquals("Creator", employee.getSecondName());
-    }
-
-
-    @Test
-    void deleteById() {
-        assertEquals(true, EmployeeService.service().deleteById(14));
-    }
-
-
-    @Test
-    void findByLoginAndPass() {
-        Employee employee = EmployeeService.service().findByLoginAndPass("expert1", "expert1");
-        assertEquals("Rakim", employee.getFirstName());
-        assertEquals("Mayers", employee.getSecondName());
-        assertEquals(1, employee.getId());
-        assertEquals("expert", employee.getPosition());
-    }
-
-    @Test
-    void loginIsExist() {
-        assertEquals(true, EmployeeService.service().loginIsExist("expert1"));
-        assertEquals(false, EmployeeService.service().loginIsExist("123456789"));
-    }
 }
